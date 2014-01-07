@@ -1,0 +1,27 @@
+﻿Build started 2014/1/8 上午 02:41:17.
+     1>Project "C:\Users\darkmore\Desktop\OpenCV2.4.62\OpenCV2.4.6\project\OpenCV\OpenCV.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Debug\OpenCV.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt testCV.cpp
+         testCV.cpp
+       ManifestResourceCompile:
+         All outputs are up-to-date.
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppBuild.targets(990,5): warning MSB8012: TargetPath(C:\Users\darkmore\Desktop\OpenCV2.4.62\OpenCV2.4.6\project\OpenCV\Debug\OpenCV.exe) does not match the Linker's OutputFile property value (C:\Users\darkmore\Desktop\OpenCV2.4.62\OpenCV2.4.6\bin\OpenCV.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"..\..\bin\OpenCV.exe" /INCREMENTAL /NOLOGO opencv_calib3d246d.lib opencv_contrib246d.lib opencv_core246d.lib opencv_features2d246d.lib opencv_flann246d.lib opencv_gpu246d.lib opencv_haartraining_engined.lib opencv_highgui246d.lib opencv_imgproc246d.lib opencv_legacy246d.lib opencv_ml246d.lib opencv_nonfree246d.lib opencv_objdetect246d.lib opencv_photo246d.lib opencv_stitching246d.lib opencv_superres246d.lib opencv_ts246d.lib opencv_video246d.lib opencv_videostab246d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\OpenCV.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\darkmore\Desktop\OpenCV2.4.62\OpenCV2.4.6\project\OpenCV\Debug\OpenCV.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\darkmore\Desktop\OpenCV2.4.62\OpenCV2.4.6\project\OpenCV\Debug\OpenCV.lib" /MACHINE:X86 Debug\OpenCV.exe.embed.manifest.res
+         Debug\testCV.obj
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"Debug\OpenCV.exe.embed.manifest" /manifest Debug\OpenCV.exe.intermediate.manifest
+         All outputs are up-to-date.
+       LinkEmbedManifest:
+         All outputs are up-to-date.
+         OpenCV.vcxproj -> C:\Users\darkmore\Desktop\OpenCV2.4.62\OpenCV2.4.6\project\OpenCV\Debug\OpenCV.exe
+       FinalizeBuildStatus:
+         Deleting file "Debug\OpenCV.unsuccessfulbuild".
+         Touching "Debug\OpenCV.lastbuildstate".
+     1>Done Building Project "C:\Users\darkmore\Desktop\OpenCV2.4.62\OpenCV2.4.6\project\OpenCV\OpenCV.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.01
