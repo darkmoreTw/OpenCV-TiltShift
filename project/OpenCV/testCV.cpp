@@ -9,83 +9,69 @@ using namespace std;
 using namespace cv;
  
 /// Global Variables
-int DELAY_CAPTION = 1500;
-int DELAY_BLUR = 100;
-int MAX_KERNEL_LENGTH = 31;
-int THRESHOLD = 7;
+int smoothRate = 7;
+int smoothType = 1;
 bool mouseClicked=false;
 
 
 CvPoint VertexOne,VertexThree;//長方形的左上點和右下點
-CvScalar Color;//框框顏色
-int Thickness;//框框粗細
-int Shift;//框框大小(0為正常)
-int key;//按鍵碼 
+string filename;
+//輸出檔案名稱
+char outputName[20];
+int outCount=1;
 
 Mat src; Mat dst;
 Mat rect_roi,src_roi;
-Mat hsv;
-Mat hhsv;
-char window_name[] = "Smoothing Demo";
- 
+Mat hsv_src,hsv_dst;
+char window_name[] = "TiltShift";
+char Rwindow_name[] = "TiltShift_Result";
 /// Function headers
-int display_caption( char* caption );
-int display_dst( int delay );
 void enhanceColor();
 void smoothImg();
+void getRectangle();
 void onMouse(int event,int x,int y,int flags,void* param); 
 int main( int argc, char** argv )
 {
-  namedWindow( window_name, CV_WINDOW_AUTOSIZE );
+	cout<<"Input the file name of image :";
+	cin>>filename;
+	// Load the source image
+	src = imread( filename, 1 );
+
+	namedWindow( window_name, 1 );
+	cvSetMouseCallback(window_name,onMouse,NULL);
  
-  /// Load the source image
-  src = imread( "14300000883681127684929714972.jpg", 1 );
-  cvSetMouseCallback(window_name,onMouse,NULL);//	
-  //if( display_caption( "Original Image" ) != 0 ) { return 0; }
- 
-  dst = src.clone();
-  if( display_dst( DELAY_CAPTION ) != 0 ) { return 0; }
- 
-  waitKey(0);
-  return 0;
+	dst = src.clone();
+	imshow( window_name, dst );
+	waitKey(0);
+	return 0;
 }
  
-int display_caption( char* caption )
-{
-  dst = Mat::zeros( src.size(), src.type() );
-  putText( dst, caption,
-           Point( src.cols/4, src.rows/2),
-           CV_FONT_HERSHEY_COMPLEX, 1, Scalar(255, 255, 255) );
- 
-  imshow( window_name, dst );
-  int c = waitKey( DELAY_CAPTION );
-  if( c >= 0 ) { return -1; }
-  return 0;
-}
- 
-int display_dst( int delay )
-{
-  imshow( window_name, dst );
-  int c = waitKey ( delay );
-  if( c >= 0 ) { return -1; }
-  return 0;
-}
 void onMouse(int event,int x,int y,int flag,void* param){
 
-    if(event==CV_EVENT_LBUTTONDOWN||event==CV_EVENT_RBUTTONDOWN){//得到左上角座標
+    if(event==CV_EVENT_LBUTTONDOWN||event==CV_EVENT_RBUTTONDOWN){//滑鼠按下
         VertexOne=cvPoint(x,y);
 		enhanceColor();
-		
 		mouseClicked=true;
     }
-    if(event==CV_EVENT_LBUTTONUP||event==CV_EVENT_RBUTTONUP){//得到右下角座標
+    if(event==CV_EVENT_LBUTTONUP||event==CV_EVENT_RBUTTONUP){//滑鼠放開
         VertexThree=cvPoint(x,y);
-		
-		src_roi = hhsv(Rect(VertexOne,VertexThree)); 
+		getRectangle();
+
+		src_roi = hsv_src(Rect(VertexOne,VertexThree)); 
 		smoothImg(); 
-		rect_roi = hhsv(Rect(VertexOne,VertexThree)); 
+		rect_roi = hsv_dst(Rect(VertexOne,VertexThree)); 
 		src_roi.copyTo(rect_roi);
-		imshow( "HSV_test", hhsv );
+		sprintf(outputName,"output%d.jpg",outCount);
+		imshow( Rwindow_name, hsv_dst );
+		//輸出檔案
+		printf("Image saved->%s\n",outputName);
+		imwrite( outputName, hsv_dst );
+		outCount++;
+		//讓拖拉畫圖殘影消失
+		dst.release();
+		src.copyTo(dst);
+
+		rectangle(dst, VertexOne, VertexThree, cv::Scalar(0, 0, 200), 3, CV_AA);
 		imshow( window_name, dst);	
 		mouseClicked=false;
     }
@@ -94,39 +80,55 @@ void onMouse(int event,int x,int y,int flag,void* param){
 		dst.release();
 		src.copyTo(dst);//讓拖拉畫圖殘影消失
         VertexThree=cvPoint(x,y);		
-		rectangle(dst, VertexOne, VertexThree, cv::Scalar(0, 0, 200), 3, CV_AA);
+		line(dst, VertexOne, VertexThree, cv::Scalar(0, 0, 200), 3, CV_AA);
 		imshow( window_name, dst );	
         
     }
-	if(event!=0){
-		printf("VertexOne( %d, %d) ",VertexOne.x,VertexOne.y);
-		printf("VertexThree( %d, %d)\n",VertexThree.x,VertexThree.y);
-	}
+
 }
 void enhanceColor(){
-		cvtColor(src,hsv,CV_BGR2HSV);//轉成hsv平面
+		cvtColor(src,hsv_src,CV_BGR2HSV);//轉成hsv平面
 		uchar lut[256][3];  
 		CvMat* lut_mat;  
 
 		lut_mat = cvCreateMatHeader( 1, 256, CV_8UC3 );  
 		cvSetData( lut_mat, lut,0);  
-
+		//增加飽和度
 		for( int i = 0; i < 256; i++ ) {  
-			int v = (i+30);  
+			int v = i+40;  
 			if( v < 0 )v = 0;  
 			else if( v > 255 )v = 255;  
 			lut[i][0] = (uchar)i; //h 
-			lut[i][1] = (uchar)v; //s:增加飽和 			
-			lut[i][2] = (uchar)v-15; //v:增加亮度
+			lut[i][1] = (uchar)v; //s:飽和 		
+			lut[i][2] = (uchar)i; //v:亮度
 		}  
-		IplImage* oldstyleimg = &hsv.operator IplImage();
+		IplImage* oldstyleimg = &hsv_src.operator IplImage();
 		cvLUT( oldstyleimg, oldstyleimg, lut_mat );  
-		cvtColor( hsv, hhsv, CV_HSV2BGR );  
+		cvtColor( hsv_src, hsv_src, CV_HSV2BGR );  
 		//增加對比
-		hhsv.convertTo( hhsv, -1, 1.2,0);
+		hsv_src.convertTo(hsv_src,-1,1.4,0);
 		
 }
+//平滑化影像
 void smoothImg(){
-	blur( hhsv, hhsv, Size( 7, 7 ), Point(-1,-1) );
-	
+	switch(smoothType){
+		case 0:
+			blur( hsv_src, hsv_dst, Size( smoothRate, smoothRate ), Point(-1,-1) );
+			break;
+		case 1:
+			GaussianBlur( hsv_src, hsv_dst, Size( smoothRate, smoothRate ), 0, 0 );
+			break;
+	}
+}
+//找出顯示區塊
+void getRectangle(){
+	int y1=VertexOne.y;
+	int y2=VertexThree.y;
+	if(y1>y2){
+		int temp=y2;
+		y2=y1;
+		y1=temp;
+	}
+	VertexOne=cvPoint(0,y1);
+	VertexThree=cvPoint(src.cols,y2);
 }
